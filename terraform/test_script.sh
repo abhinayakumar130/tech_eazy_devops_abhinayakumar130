@@ -16,7 +16,7 @@ sudo chown ubuntu:ubuntu /opt/tech_eazy_devops_abhinayakumar130/app.log
 echo "ERROR: Something went wrong in test instance!" >> /opt/tech_eazy_devops_abhinayakumar130/app.log
 
 # Download CloudWatch config
-wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinayakumar130/main/cloudwatch-config.json -O /opt/cloudwatch-config.json
+wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinayakumar130/ass-5/terraform/cloudwatch-config.json -O /opt/cloudwatch-config.json
 
 # Start the CloudWatch Agent
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
