@@ -11,5 +11,6 @@
   "aws_region": "us-east-1",
   "s3_bucket_name": "bucket-4254",
   "stop_after_minutes": 40,
-  "enable_readonly_ec2": true
+  "enable_readonly_ec2": true,
+  "create_test_instance": true
 }

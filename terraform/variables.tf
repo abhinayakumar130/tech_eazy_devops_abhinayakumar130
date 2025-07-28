@@ -77,3 +77,8 @@ variable "enable_readonly_ec2" {
 
 }
 
+variable "create_test_instance" {
+  type    = bool
+  default = true
+}
+
