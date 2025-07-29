@@ -3,12 +3,12 @@ resource "aws_cloudwatch_log_group" "app_logs" {
   name              = "/ec2/app/logs"
   retention_in_days = 7
 }
-
+ 
 # Metric Filter for detecting "ERROR" or "Exception" in logs
 resource "aws_cloudwatch_log_metric_filter" "app_error_filter" {
   name           = "app-error-filter"
   log_group_name = aws_cloudwatch_log_group.app_logs.name
-  pattern        = "?ERROR ?Exception"
+  pattern        = "ERROR"
 
   metric_transformation {
     name      = "AppErrorCount"
@@ -20,7 +20,7 @@ resource "aws_cloudwatch_log_metric_filter" "app_error_filter" {
 # Alarm based on error metric
 resource "aws_cloudwatch_metric_alarm" "error_alarm" {
   alarm_name                = "app-error-alarm"
-  comparison_operator       = "GreaterThanThreshold"
+  comparison_operator       = "GreaterThanOrEqualToThreshold"
   evaluation_periods        = 1
   metric_name               = "AppErrorCount"
   namespace                 = "AppMonitoring"
