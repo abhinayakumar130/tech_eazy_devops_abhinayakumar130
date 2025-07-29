@@ -8,7 +8,7 @@ resource "aws_cloudwatch_log_group" "app_logs" {
 resource "aws_cloudwatch_log_metric_filter" "app_error_filter" {
   name           = "app-error-filter"
   log_group_name = aws_cloudwatch_log_group.app_logs.name
-  pattern        = "ERROR"
+  pattern        = "?ERROR ?Exception"
 
   metric_transformation {
     name      = "AppErrorCount"
