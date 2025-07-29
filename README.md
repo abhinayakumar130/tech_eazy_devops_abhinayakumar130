@@ -1,5 +1,5 @@
 # 🚀 DevOps Internship Project – AWS EC2, S3, Terraform & GitHub Actions
-This project demonstrates how to provision, configure, and deploy EC2 instances using Terraform and GitHub Actions. It includes S3 bucket management, IAM roles, and a CI/CD pipeline with multi-environment support (dev, qa, prod).
+This project demonstrates how to provision, configure, and deploy EC2 instances using Terraform and GitHub Actions. It includes S3 bucket management, IAM roles, CI/CD pipeline with multi-environment support (dev, qa, prod) and CloudWatch log monitoring with alerting via SNS.
 
 
 ## ✅ Assignments Covered
@@ -11,6 +11,8 @@ This project demonstrates how to provision, configure, and deploy EC2 instances 
 - Assignment 3: CI/CD pipeline for multi-stage deployments (dev, qa, prod) using GitHub Actions.
 
 - Assignment 4: CI/CD pipeline enhancement with parameterized multi-stage automation, Private/Public GitHub Config Handling, and environment-based log routing.
+  
+- Assignment 5: CloudWatch integration with log monitoring, alarm setup, and email alerting via SNS.
 
 
 ## 🧰 Prerequisites
@@ -76,7 +78,43 @@ This project demonstrates how to provision, configure, and deploy EC2 instances 
   - S3 logs are uploaded to `s3://your-bucket-name/logs/<stage>/` post deployment.  
   
   - Includes health check verification step to validate successful app deployment.
+
+ 📌 **Assignment 5: CloudWatch Log Monitoring and Alerting via SNS** 
+
+  - Enable CloudWatch Logs on EC2:
+     
+     - CloudWatch Agent installed via startup script  
+     
+     - Config pulled from GitHub for environment-based logging  
+
+  - Create SNS Topic:  
+
+    - Topic: `app-alerts-topic`  
+
+    - Email subscription for real-time alerts (confirm via email)  
   
+  - Set up CloudWatch Alarm:  
+
+    - Monitors `/app.log`  
+
+    - Triggers alarm if `ERROR` or `Exception` appears in logs  
+
+    - Alarm sends email via SNS within ~5 minutes  
+  
+  - Test Flow:  
+
+    - Simulate error using:  
+    
+       ```bash
+        echo "ERROR: Simulated failure on $(date)" >> /opt/tech_eazy_devops_abhinayakumar130/app.log
+       ```  
+
+    - CloudWatch triggers alarm and sends notification  
+
+    - Alarm resets when log stabilizes (no matching errors for evaluation period)  
+
+---
+   
 ## 🚀 How It Works
 
 **1️⃣ Trigger Deployment**
@@ -121,9 +159,13 @@ Via GitHub:
 
 **4️⃣ Monitor Deployment**
 
-  - The workflow run will start and show progress in GitHub Actions
-
-  - Green checkmarks indicate successful steps
+  - Logs sent to CloudWatch log group  
+  
+  - Metric filter matches `ERROR` or `Exception`  
+  
+  - Alarm evaluates logs every 1 minute  
+  
+  - Email alert sent via SNS topic  
 
 **5️⃣ Destroy Infrastructure**
 
@@ -150,5 +192,7 @@ To tear down:
     2. Terraform backend is stored in S3.
 
     3. IAM role policies ensure only that instance can access its environment's logs.
+
+    4. Log monitoring and SNS alerting is automated for real-time failure detection.
 
 📝 Project by Abhinaya Muthukumar – DevOps Internship
