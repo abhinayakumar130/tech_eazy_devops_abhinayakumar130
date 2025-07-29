@@ -39,8 +39,10 @@ jobs:
           echo "stage=$STAGE" >> "$GITHUB_OUTPUT"
 
       # Step 2: Checkout the code from GitHub
-      - name: Checkout code
+      - name: Checkout correct code (branch or tag)
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
 
       # Step 3: Configure AWS credentials from GitHub Secrets
       - name: Configure AWS Credentials
