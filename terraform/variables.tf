@@ -82,3 +82,9 @@ variable "create_test_instance" {
   default = true
 }
 
+variable "enable_alarm" {
+  type    = bool
+  default = false
+  description = "Enable CloudWatch alarm for the stage"
+}
+

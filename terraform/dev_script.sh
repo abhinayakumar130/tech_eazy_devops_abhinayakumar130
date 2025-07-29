@@ -45,9 +45,6 @@ chmod +x mvnw
 #build artifact
 ./mvnw clean package
 
-# Run the app
-nohup $JAVA_HOME/bin/java -jar target/*.jar > /opt/${REPO_DIR_NAME}/app.log 2>&1 &
-
 # Download and install CloudWatch Agent manually (.deb method)
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i amazon-cloudwatch-agent.deb
@@ -59,6 +56,9 @@ wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinay
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -a fetch-config -m ec2 \
   -c file:/opt/cloudwatch-config.json -s
+
+# Run the app
+nohup $JAVA_HOME/bin/java -jar target/*.jar > /opt/${REPO_DIR_NAME}/app.log 2>&1 &
 
 # --- Upload cloud-init logs to S3 ---
 sleep 30

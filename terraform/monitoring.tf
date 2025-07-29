@@ -1,38 +1,43 @@
-# Create Log Group explicitly
-resource "aws_cloudwatch_log_group" "app_log_group" {
+# Create CloudWatch Log Group
+resource "aws_cloudwatch_log_group" "app_logs" {
+  count             = var.enable_alarm ? 1 : 0
+
   name              = "/ec2/app/logs"
   retention_in_days = 7
 }
 
-# Metric Filter for "ERROR" or "Exception"
-resource "aws_cloudwatch_log_metric_filter" "error_filter" {
-  name           = "error-metric-filter"
-  log_group_name = aws_cloudwatch_log_group.app_log_group.name
-  pattern        = "?ERROR ?Exception"
+# Metric Filter for detecting "ERROR" or "Exception" in logs
+resource "aws_cloudwatch_log_metric_filter" "app_error_filter" {
+  count          = var.enable_alarm ? 1 : 0
+
+  name           = "app-error-filter-${var.stage}"
+  log_group_name = aws_cloudwatch_log_group.app_logs[0].name
+  pattern        = "ERROR || Exception"
 
   metric_transformation {
-    name      = "ErrorCount"
-    namespace = "AppMetrics"
+    name      = "AppErrorCount"
+    namespace = "AppMonitoring"
     value     = "1"
   }
-    # Ensure log group is created first
-  depends_on = [aws_cloudwatch_log_group.app_log_group]
+
+  depends_on = [aws_cloudwatch_log_group.app_logs]
 }
 
-# Alarm based on the metric
+# Alarm based on error metric
 resource "aws_cloudwatch_metric_alarm" "error_alarm" {
-  alarm_name          = "AppErrorAlarm"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = 1
-  metric_name         = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].name
-  namespace           = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].namespace
-  period              = 300
-  statistic           = "Sum"
-  threshold           = 1
+  count                     = var.enable_alarm ? 1 : 0
 
-  alarm_description   = "Triggered when ERROR or Exception found in app.log"
-  alarm_actions       = [aws_sns_topic.app_alerts.arn]
+  alarm_name                = "app-error-alarm-${var.stage}"
+  comparison_operator       = "GreaterThanThreshold"
+  evaluation_periods        = 1
+  metric_name               = "AppErrorCount"
+  namespace                 = "AppMonitoring"
+  period                    = 60
+  statistic                 = "Sum"
+  threshold                 = 1
+  alarm_description         = "Alarm for error logs in application"
+  alarm_actions             = [aws_sns_topic.app_alerts.arn]
 
-  depends_on = [aws_cloudwatch_log_metric_filter.error_filter]
+  depends_on = [aws_cloudwatch_log_metric_filter.app_error_filter]
 }
 
