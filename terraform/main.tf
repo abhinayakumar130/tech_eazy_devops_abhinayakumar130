@@ -64,6 +64,12 @@ resource "aws_iam_instance_profile" "s3_creator_uploader_profile" {
   }
 }
 
+# CloudWatch Policy
+resource "aws_iam_role_policy_attachment" "cloudwatch_logs_policy" {
+  role       = aws_iam_role.s3_creator_uploader_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 # IAM Role: Read-Only
 resource "aws_iam_role" "s3_read_only_role" {
   name = "s3_read_only_role"

@@ -4,8 +4,9 @@
 sudo apt update
 sudo apt install unzip wget curl -y
 
-# Install AWS CloudWatch Agent
-sudo apt install amazon-cloudwatch-agent -y
+# Download and install CloudWatch Agent manually (.deb method)
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i amazon-cloudwatch-agent.deb
 
 # Create directory and log file
 sudo mkdir -p /opt/tech_eazy_devops_abhinayakumar130/

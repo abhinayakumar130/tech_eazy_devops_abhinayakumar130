@@ -48,14 +48,15 @@ chmod +x mvnw
 # Run the app
 nohup $JAVA_HOME/bin/java -jar target/*.jar > /opt/${REPO_DIR_NAME}/app.log 2>&1 &
 
-# --- Install and Configure CloudWatch Agent ---
-sudo apt install -y amazon-cloudwatch-agent
+# Download and install CloudWatch Agent manually (.deb method)
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i amazon-cloudwatch-agent.deb
 
 # Fetch CloudWatch Agent config from GitHub or S3
 wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinayakumar130/ass-5/terraform/cloudwatch-config.json -O /opt/cloudwatch-config.json
 
 # Apply config
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -a fetch-config -m ec2 \
   -c file:/opt/cloudwatch-config.json -s
 
