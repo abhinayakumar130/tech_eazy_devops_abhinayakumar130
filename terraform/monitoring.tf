@@ -10,24 +10,22 @@ resource "aws_cloudwatch_log_group" "app_logs" {
 resource "aws_cloudwatch_log_metric_filter" "app_error_filter" {
   count          = var.enable_alarm ? 1 : 0
 
-  name           = "app-error-filter-${var.stage}"
+  name           = "app-error-filter"
   log_group_name = aws_cloudwatch_log_group.app_logs[0].name
-  pattern        = "ERROR || Exception"
+  pattern        = "?ERROR ?Exception"
 
   metric_transformation {
     name      = "AppErrorCount"
     namespace = "AppMonitoring"
     value     = "1"
   }
-
-  depends_on = [aws_cloudwatch_log_group.app_logs]
 }
 
 # Alarm based on error metric
 resource "aws_cloudwatch_metric_alarm" "error_alarm" {
   count                     = var.enable_alarm ? 1 : 0
 
-  alarm_name                = "app-error-alarm-${var.stage}"
+  alarm_name                = "app-error-alarm"
   comparison_operator       = "GreaterThanThreshold"
   evaluation_periods        = 1
   metric_name               = "AppErrorCount"

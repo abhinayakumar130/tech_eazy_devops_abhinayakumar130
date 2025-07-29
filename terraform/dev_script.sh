@@ -11,7 +11,7 @@ AWS_REGION_FOR_SCRIPT="${AWS_REGION_FOR_SCRIPT}" # NEW: This variable is now cor
 
 # Update & install unzip
 sudo apt update  
-sudo apt install unzip -y
+sudo apt install unzip wget curl -y
 
 # Install AWS CLI v2 manually
 if ! command -v aws &> /dev/null; then
@@ -24,6 +24,11 @@ fi
 sudo apt install "$JAVA_VERSION" -y
 sudo apt install maven -y
 
+# Set JAVA_HOME (must be done after Java is installed)
+export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))
+echo "JAVA_HOME is set to: $JAVA_HOME"
+
+#Set HOME
 export HOME=/root
 echo "HOME environment variable set to: $HOME"
 
@@ -49,8 +54,13 @@ chmod +x mvnw
 wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i amazon-cloudwatch-agent.deb
 
+# Create directory and log file
+sudo mkdir -p /opt/tech_eazy_devops_abhinayakumar130/
+sudo touch /opt/tech_eazy_devops_abhinayakumar130/app.log
+sudo chown ubuntu:ubuntu /opt/tech_eazy_devops_abhinayakumar130/app.log
+
 # Fetch CloudWatch Agent config from GitHub or S3
-wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinayakumar130/ass-5/terraform/cloudwatch-config.json -O /opt/cloudwatch-config.json
+sudo wget https://raw.githubusercontent.com/abhinayakumar130/tech_eazy_devops_abhinayakumar130/ass-5/terraform/cloudwatch-config.json -O /opt/cloudwatch-config.json
 
 # Apply config
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
@@ -58,7 +68,7 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
   -c file:/opt/cloudwatch-config.json -s
 
 # Run the app
-nohup $JAVA_HOME/bin/java -jar target/*.jar > /opt/${REPO_DIR_NAME}/app.log 2>&1 &
+nohup $JAVA_HOME/bin/java -jar target/*.jar > /opt/tech_eazy_devops_abhinayakumar130/app.log 2>&1 &
 
 # --- Upload cloud-init logs to S3 ---
 sleep 30
