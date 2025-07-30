@@ -64,6 +64,12 @@ resource "aws_iam_instance_profile" "s3_creator_uploader_profile" {
   }
 }
 
+# CloudWatch Policy
+resource "aws_iam_role_policy_attachment" "cloudwatch_logs_policy" {
+  role       = aws_iam_role.s3_creator_uploader_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 # IAM Role: Read-Only
 resource "aws_iam_role" "s3_read_only_role" {
   name = "s3_read_only_role"
@@ -212,4 +218,32 @@ resource "aws_instance" "readonly_ec2" {
   vpc_security_group_ids = [aws_security_group.mysg.id]
 }
 
+# SNS Topic and Subscription
+resource "aws_sns_topic" "app_alerts" {
+  name = "app-alerts-topic"
+}
+
+resource "aws_sns_topic_subscription" "email_alert" {
+  topic_arn = aws_sns_topic.app_alerts.arn
+  protocol  = "email"
+  endpoint  = "abhinayakuma@gmail.com"
+}
+
+# Log Testing
+resource "aws_instance" "log_tester_instance" {
+  count                       = var.create_test_instance ? 1 : 0
+  ami                         = local.config.ami_value
+  instance_type               = local.config.instance_type_value
+  vpc_security_group_ids      = [aws_security_group.mysg.id]
+  iam_instance_profile        = aws_iam_instance_profile.s3_creator_uploader_profile.name
+  key_name                    = local.config.key_name_value
+  associate_public_ip_address = true
+
+  tags = {
+    Name        = "log-tester-${var.stage}"
+    Environment = var.stage
+  }
+
+  user_data = file("${path.module}/test_script.sh")
+}
 
